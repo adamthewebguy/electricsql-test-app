@@ -1,0 +1,42 @@
+# fly.toml app configuration file generated for electricsql-on-fly-test-app on 2024-06-07T19:33:41+01:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'electricsql-on-fly-test-app'
+primary_region = 'lhr'
+
+[build]
+  image = 'electricsql/electric:latest'
+
+[env]
+  AUTH_MODE = 'insecure'
+  DATABASE_REQUIRE_SSL = 'false'
+  DATABASE_URL = 'postgres://postgres:ZM4mgT9olYDyF76@my-app-pg.flycast:5432'
+  DATABASE_USE_IPV6 = 'true'
+  ELECTRIC_WRITE_TO_PG_MODE = 'direct_writes'
+  PG_PROXY_PASSWORD = 'proxy_password'
+
+[http_service]
+  internal_port = 5133
+  force_https = true
+
+  [[http_service.checks]]
+    interval = '10s'
+    timeout = '1s'
+    grace_period = '20s'
+    method = 'GET'
+    path = '/api/status'
+
+[[services]]
+  protocol = 'tcp'
+  internal_port = 65432
+
+  [[services.ports]]
+    port = 65432
+    handlers = ['pg_tls']
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
